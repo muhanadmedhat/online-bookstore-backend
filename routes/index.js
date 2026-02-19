@@ -1,9 +1,9 @@
-const express = require('express');
+const router = require("express").Router();
 
-const router = express.Router();
+const authorRoutes = require("./author");
+const categoryRoutes = require("./category");
 
-router.use((req, res) => {
-  res.status(404).json({error: 'Not Found'});
-});
+router.use("/authors", authorRoutes);
+router.use("/categories", categoryRoutes);
 
-module.exports = {router};
+module.exports = router;
