@@ -1,11 +1,10 @@
-import js from "@eslint/js";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
+const globals = require("globals");
 
-export default defineConfig([
+module.exports = [
   {
     files: ["**/*.js"],
     languageOptions: {
+      sourceType: "commonjs",
       globals: globals.node,
     },
     rules: {
@@ -13,8 +12,7 @@ export default defineConfig([
       "prefer-const": "error",
       "eqeqeq": ["error", "always"],
       "no-var": "error",
-      "indent": ["error", 2],
       "semi": ["error", "always"]
     }
   }
-]);
+];
