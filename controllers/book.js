@@ -6,7 +6,7 @@ async function get(queryParams) {
   try {
     const MAX_LIMIT = 50;
     const {category, author, minPrice, maxPrice, search, limit, page} = queryParams;
-    const safePage = Math.max(1, Number.parseInt(page) || 1);
+    const safePage = Math.max(Number.parseInt(page) || 1, 1);
     const safeLimit = Math.min(Number.parseInt(limit) || 10, MAX_LIMIT);
     const skip = (safePage - 1) * safeLimit;
     const filter = {};
@@ -94,8 +94,10 @@ async function softDelete(id) {
 
 async function getPopular() {
   try {
-    return await Book.find().sort({averageRating: -1}).limit(10);
+    const books = await Book.find().sort({averageRating: -1}).limit(10);
+    if (!books) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
   } catch (error) {
+    if (error instanceof CustomError) throw error;
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
