@@ -1,7 +1,11 @@
 {
   "name": "backend",
+  "type": "commonjs",
   "version": "1.0.0",
   "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,10 +14,6 @@
     "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

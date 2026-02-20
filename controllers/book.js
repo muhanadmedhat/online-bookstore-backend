@@ -85,7 +85,7 @@ async function softDelete(id) {
       returnDocument: 'after'
     });
     if (!deleted) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
-    return {"success":true};
+    return {success: true};
   } catch (error) {
     if (error instanceof CustomError) throw error;
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});

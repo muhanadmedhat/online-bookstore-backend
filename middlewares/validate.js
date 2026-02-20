@@ -9,5 +9,3 @@ function validate(schema) {
 }
 
 module.exports = validate;
-// routes/user.js
-// router.post('/register', validate(registerSchema), register);
