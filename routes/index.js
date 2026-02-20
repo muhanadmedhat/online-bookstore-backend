@@ -1,9 +1,7 @@
 const express = require('express');
-
 const router = express.Router();
 
-router.use((req, res) => {
-  res.status(404).json({error: 'Not Found'});
-});
+router.use('/api/v1/users', require('./users'));
+router.use('/api/v1/auth', require('./auth'));
 
-module.exports = {router};
+module.exports = router;
