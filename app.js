@@ -3,6 +3,7 @@ const CustomError = require('./helpers/CustomError');
 const router = require('./routes');
 
 const app = express();
+
 app.use(express.json());
 
 app.use('/health', (req, res) => {
