@@ -67,7 +67,7 @@ userSchema.pre("save", function () {
 });
 
 userSchema.set('toJSON', {
-  transform: (doc, {__v, refreshTokenHash, password, ...rest}, options) => rest
+    transform: (doc, { __v, refreshTokenHash, password, ...rest }, options) => rest
 });
 
 userSchema.methods.verifyPassword = function (password) {

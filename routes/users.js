@@ -1,67 +1,61 @@
 const {userControllers} = require('../controllers');
-const {authMiddlewares} = require('../middlewares');
-const {usersMiddlewares} = require('../middlewares');
+const {verifyToken, authorize} = require('../validations/auth.js');
+const {validateUserProfileUpdate, validateUserPasswordUpdate} = require('../validations/users.js');
 
 const express = require('express');
 const router = express.Router();
-router.use(authMiddlewares.verifyToken);
+router.use(verifyToken);
 
-router.get('/me/test', async (req, res) => {
+router.get('/me/test', async (req, res, next) => {
     try {
         res.status(201).json({result: "Connection Ok"});
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 
-router.get('/me', async (req, res) => {
+router.get('/me', async (req, res, next) => {
     try {
         const result = await userControllers.getUserProfile(req.user.id);
         res.status(201).json(result);
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 
-router.put('/me', usersMiddlewares.validateUserProfileUpdate, async (req, res) => {
+router.put('/me', validateUserProfileUpdate, async (req, res, next) => {
     try {
         const result = await userControllers.updateUserProfile(req.user.id, req.body);
         res.status(201).json(result);
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 
-router.put('/me/passwords', usersMiddlewares.validateUserPasswordUpdate, async (req, res) => {
+router.put('/me/passwords', validateUserPasswordUpdate, async (req, res, next) => {
     try {
         const result = await userControllers.updateUserPassword(req.user.id, req.body);
         res.status(201).json(result);
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 
-router.get('/', authMiddlewares.authorize('admin'), async (req, res) => {
+router.get('/', authorize('admin'), async (req, res, next) => {
     try {
         const result = await userControllers.getUsersProfiles(req.query);
         res.status(201).json(result);
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 
-router.delete('/:id', authMiddlewares.authorize('admin'), async (req, res) => {
+router.delete('/:id', authorize('admin'), async (req, res, next) => {
     try {
         const result = await userControllers.deleteUserProfile(req.params.id);
         res.status(201).json(result);
     } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
+        next(err);
     }
 });
 

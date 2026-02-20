@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const Joi = require('joi');
-const { validate } = require('./validate');
+const { validate } = require('../middlewares/validate');
 
 const authorize = (...allowedRoles) => {
     return (req, res, next) => {

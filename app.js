@@ -11,10 +11,12 @@ app.use((req, res) => {
 
 app.use((error, req, res, next) => {
   console.error('Error:', error);
-  const status = error.status || 500;
+  const statusCode = error.statusCode || error.status || 500;
   const message = error.message || 'Internal server error';
-  res.status(status).json({
-    error: message
+  const code = error.code || 'INTERNAL_SERVER_ERROR';
+  res.status(statusCode).json({
+    error: message,
+    code: code
   });
 });
 

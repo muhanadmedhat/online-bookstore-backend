@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { validate } = require('./validate');
+const { validate } = require('../middlewares/validate');
 
 const userUpdateProfileSchema = Joi.object({
     email: Joi.string()
