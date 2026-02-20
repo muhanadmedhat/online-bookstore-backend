@@ -1,7 +1,10 @@
+const {userControllers} = require('../controllers');
+const {authMiddlewares} = require('../middlewares');
+const {usersMiddlewares} = require('../middlewares');
+
 const express = require('express');
 const router = express.Router();
-
-const {userControllers} = require('../controllers');
+router.use(authMiddlewares.verifyToken);
 
 router.get('/me/test', async (req, res) => {
     try {
@@ -14,7 +17,7 @@ router.get('/me/test', async (req, res) => {
 
 router.get('/me', async (req, res) => {
     try {
-        const result = await userControllers.getUserProfile(req.body);
+        const result = await userControllers.getUserProfile(req.user.id);
         res.status(201).json(result);
     } catch (err) {
         const status = err.status || 500;
@@ -22,9 +25,9 @@ router.get('/me', async (req, res) => {
     }
 });
 
-router.put('/me', async (req, res) => {
+router.put('/me', usersMiddlewares.validateUserProfileUpdate, async (req, res) => {
     try {
-        const result = await userControllers.updateUserProfile(req.body);
+        const result = await userControllers.updateUserProfile(req.user.id, req.body);
         res.status(201).json(result);
     } catch (err) {
         const status = err.status || 500;
@@ -32,9 +35,9 @@ router.put('/me', async (req, res) => {
     }
 });
 
-router.put('/me/passwords', async (req, res) => {
+router.put('/me/passwords', usersMiddlewares.validateUserPasswordUpdate, async (req, res) => {
     try {
-        const result = await userControllers.updateUserPassword(req.body);
+        const result = await userControllers.updateUserPassword(req.user.id, req.body);
         res.status(201).json(result);
     } catch (err) {
         const status = err.status || 500;
@@ -42,9 +45,9 @@ router.put('/me/passwords', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', authMiddlewares.authorize('admin'), async (req, res) => {
     try {
-        const result = await userControllers.getUsersProfiles(req.body);
+        const result = await userControllers.getUsersProfiles(req.query);
         res.status(201).json(result);
     } catch (err) {
         const status = err.status || 500;
@@ -52,9 +55,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddlewares.authorize('admin'), async (req, res) => {
     try {
-        const result = await userControllers.deleteUserProfile(req.body);
+        const result = await userControllers.deleteUserProfile(req.params.id);
         res.status(201).json(result);
     } catch (err) {
         const status = err.status || 500;

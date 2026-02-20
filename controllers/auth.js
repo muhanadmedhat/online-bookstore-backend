@@ -46,13 +46,11 @@ async function userLogin(data) {
 
 async function userLogout(data) {
     try {
-        // logout by invalidating stored refresh token
         const { refreshToken, userId } = data;
         if (!refreshToken && !userId) throw { status: 400, message: 'refreshToken or userId required' };
 
         let uid = userId;
         if (refreshToken && !uid) {
-            // try to decode refresh token to get userId
             const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
             uid = decoded.userId;
         }
@@ -70,6 +68,7 @@ async function userLogout(data) {
     }
 }
 
+/////////////// bug ///////////////
 async function refreshTokens(data) {
     try {
         const { refreshToken } = data;

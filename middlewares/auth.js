@@ -4,6 +4,18 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const Joi = require('joi');
 const { validate } = require('./validate');
 
+const authorize = (...allowedRoles) => {
+    return (req, res, next) => {
+        if(!req.user) {
+            return res.status(401).json({error: "Authintication Required"});
+        }
+        if(!allowedRoles.includes(req.user.role)){
+            return res.status(403).json({error: "You don't have Permission."});
+        }
+        next();
+    };
+};
+
 const verifyToken = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization || '';
@@ -38,6 +50,9 @@ const userRegisterSchema = Joi.object({
             'string.max': 'Password must not exceed 50 characters',
             'any.required': 'Password is required'
         }),
+
+    role: Joi.string()
+        .optional(),
 
     firstName: Joi.string()
         .min(3)
@@ -90,6 +105,7 @@ const validateUserRegister = validate(userRegisterSchema, 'body');
 const validateUserLogin = validate(userLoginSchema, 'body');
 
 module.exports = {
+    authorize,
     verifyToken,
     validateUserRegister,
     validateUserLogin

@@ -40,8 +40,8 @@ router.post('/login', authMiddlewares.validateUserLogin, async (req, res) => {
 router.post('/logout', async (req, res) => {
     try {
         const payload = { refreshToken: req.body.refreshToken, userId: req.body.userId };
+        console.log(payload);
         const result = await authControllers.userLogout(payload);
-        // clear cookie if client used cookies (optional)
         res.clearCookie && res.clearCookie('refreshToken');
         res.status(200).json(result);
     } catch (err) {
@@ -64,26 +64,27 @@ router.post('/refresh', async (req, res) => {
 });
 
 
-router.get('/verify-email/:token', async (req, res) => {
-    try {
-        const result = await authControllers.verifyEmail(req.body);
-        res.status(201).json(result);
-    } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
-    }
-});
-
-
-router.post('/resend-verification', async (req, res) => {
-    try {
-        const result = await authControllers.resebdVerification(req.body);
-        res.status(201).json(result);
-    } catch (err) {
-        const status = err.status || 500;
-        res.status(status).json({ error: err.message });
-    }
-});
+// TO BE IMPLEMENTED BY MR ASAAAAAAAAAD
+// router.get('/verify-email/:token', async (req, res) => {
+//     try {
+//         const result = await authControllers.verifyEmail(req.params.token);
+//         res.status(201).json(result);
+//     } catch (err) {
+//         const status = err.status || 500;
+//         res.status(status).json({ error: err.message });
+//     }
+// });
+//
+//
+// router.post('/resend-verification', async (req, res) => {
+//     try {
+//         const result = await authControllers.resendVerification(req.body);
+//         res.status(201).json(result);
+//     } catch (err) {
+//         const status = err.status || 500;
+//         res.status(status).json({ error: err.message });
+//     }
+// });
 
 
 module.exports = router;
