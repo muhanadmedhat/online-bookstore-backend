@@ -1,1 +1,4 @@
-module.exports = {};
+module.exports = {
+  booksController: require('./book'),
+  reviewsController: require('./review')
+};
