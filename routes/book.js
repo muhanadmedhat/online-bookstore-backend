@@ -36,10 +36,10 @@ router.get('/:id', async (req, res) => {
 
 // POST
 
-router.post('/', async (req, res) => {
+router.post('/', validateSchema(validations.createBookSchema),async (req, res) => {
   const {body} = req;
   const book = await booksController.add(body);
-  res.json(book);
+  res.status(201).json(book);
 });
 
 // PATCH

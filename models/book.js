@@ -12,11 +12,7 @@ const bookSchema = mongoose.Schema({
     ref: 'Author',
     required: true
   },
-  categories: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Category',
-    required: true
-  },
+  categories: [{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}],
   coverUrl: {
     type: String,
     required: true
@@ -50,11 +46,11 @@ const bookSchema = mongoose.Schema({
   }
 }, {timestamps: true});
 
-bookSchema.pre(/^find/, function () {
+bookSchema.pre(['find', 'countDocuments'], function () {
   if (!this.getOptions().includeDeleted) {
     this.where({isDeleted: false});
   }
 });
-bookSchema.index({name: 'text', author: 'text'});
+bookSchema.index({name: 'text'});
 const Book = mongoose.model('Book', bookSchema);
 module.exports = Book;

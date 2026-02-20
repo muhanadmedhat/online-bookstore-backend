@@ -9,7 +9,7 @@ async function get(queryParams) {
     const safePage = Math.max(1, Number.parseInt(page) || 1);
     const safeLimit = Math.min(Number.parseInt(limit) || 10, MAX_LIMIT);
     const skip = (safePage - 1) * safeLimit;
-    const filter = {isDeleted: false};
+    const filter = {};
     if (category)
       filter.category = category;
     if (author)
@@ -85,7 +85,7 @@ async function softDelete(id) {
       returnDocument: 'after'
     });
     if (!deleted) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
-    return deleted;
+    return {"success":true};
   } catch (error) {
     if (error instanceof CustomError) throw error;
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});

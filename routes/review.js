@@ -8,7 +8,7 @@ const router = express.Router();
 // GET
 
 router.get('/', async (req, res) => {
-  const reviews = await reviewsController.get();
+  const reviews = await reviewsController.get(req.query);
   res.json(reviews);
 });
 

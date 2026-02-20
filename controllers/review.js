@@ -1,9 +1,23 @@
 const CustomError = require('../helpers/CustomError');
 const Review = require('../models/review');
 
-async function get() {
+async function get(queryParams) {
   try {
-    return await Review.find();
+    const MAX_LIMIT = 50;
+    const {book, limit, page} = queryParams;
+    const safePage = Math.max(1, Number.parseInt(page) || 1);
+    const safeLimit = Math.min(Number.parseInt(limit) || 10, MAX_LIMIT);
+    const skip = (safePage - 1) * safeLimit;
+    const filter = {};
+    if (book) filter.book = book;
+    const total = await Review.countDocuments(filter);
+    const reviews = await Review.find(filter).skip(skip).limit(safeLimit);
+    return {
+      reviews,
+      total,
+      page: safePage,
+      totalPages: Math.ceil(total / safeLimit)
+    };
   } catch (error) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
