@@ -1,6 +1,5 @@
 const CustomError = require('../helpers/CustomError');
 const Book = require('../models/book');
-const Review = require('../models/review');
 
 async function get(queryParams) {
   try {
@@ -60,6 +59,7 @@ async function add(req) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
+
 async function update(id, req) {
   try {
     const updatedFields = req.body;
@@ -104,24 +104,15 @@ async function softDelete(id) {
 async function getPopular() {
   try {
     const books = await Book.find().sort({averageRating: -1}).limit(10);
-    if (!books) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
+    if (!books.length) throw new CustomError({statusCode: 404, message: 'No popular books found', code: 'BOOK_NOT_FOUND'});
+    return books;
   } catch (error) {
     if (error instanceof CustomError) throw error;
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
 
-async function getBookReviews(id) {
-  try {
-    const book = await Book.findById(id);
-    if (!book) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
-    return await Review.find({book: id});
-  } catch (error) {
-    if (error instanceof CustomError) throw error;
-    throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
-  }
-}
 // async function remove(id) {
 //   return await Book.findByIdAndDelete(id);
 // }
-module.exports = {get, add, update, softDelete, getById, getPopular, getBookReviews};
+module.exports = {get, add, update, softDelete, getById, getPopular};

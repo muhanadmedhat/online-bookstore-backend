@@ -7,22 +7,23 @@ const router = express.Router();
 
 // GET
 
-router.get('/', verifyToken, async (req, res) => {
-  const reviews = await reviewsController.get(req.query);
+router.get('/book/:id', async (req, res) => {
+  const {id} = req.params;
+  const reviews = await reviewsController.get(id, req.query);
   res.json(reviews);
 });
 
 // POST
 
-router.post('/', verifyToken, validateSchema(valdiations.createReviewSchema), async (req, res) => {
-  const {body} = req;
-  const review = await reviewsController.add(body);
+router.post('/book/:id', verifyToken, validateSchema(valdiations.createReviewSchema), async (req, res) => {
+  const {id} = req.params;
+  const review = await reviewsController.add(id, req);
   res.json(review);
 });
 
 // UPDATE
 
-router.patch('/:id', verifyToken, validateSchema(valdiations.updateReviewSchema), async (req, res) => {
+router.patch('/book/:id', verifyToken, validateSchema(valdiations.updateReviewSchema), async (req, res) => {
   const {id} = req.params;
   const {body} = req;
   const updated = await reviewsController.update(id, body);
@@ -33,7 +34,15 @@ router.patch('/:id', verifyToken, validateSchema(valdiations.updateReviewSchema)
 
 router.delete('/:id', verifyToken, async (req, res) => {
   const {id} = req.params;
-  const deleted = await reviewsController.remove(id);
+  const deleted = await reviewsController.remove(id, req.user.id);
+  res.json(deleted);
+});
+
+// DELETE BY ADMIN
+
+router.delete('/:id/admin', verifyToken, authorize('admin'), async (req, res) => {
+  const {id} = req.params;
+  const deleted = await reviewsController.adminRemove(id);
   res.json(deleted);
 });
 

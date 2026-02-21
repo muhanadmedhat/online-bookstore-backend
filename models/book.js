@@ -51,6 +51,7 @@ bookSchema.pre(['find', 'countDocuments'], function () {
     this.where({isDeleted: false});
   }
 });
+
 bookSchema.index({name: 'text'});
 const Book = mongoose.model('Book', bookSchema);
 module.exports = Book;
