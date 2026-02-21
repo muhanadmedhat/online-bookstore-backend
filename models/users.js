@@ -54,6 +54,12 @@ const userSchema = new mongoose.Schema(
     },
     refreshTokenHash: {
       type: String
+    },
+    verificationCode: {
+      type: String
+    },
+    verificationCodeExpiry: {
+      type: Date
     }
   },
   {

@@ -22,6 +22,16 @@ router.post('/register', validateSchema(userRegisterSchema), async (req, res, ne
   }
 });
 
+router.post('/verify-email', async (req, res, next) => {
+  try {
+    const {verificationCode} = req.body;
+    const isVerified = await authControllers.verifyEmail(verificationCode);
+    res.status(200).json(isVerified);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/login', validateSchema(userLoginSchema), async (req, res, next) => {
   try {
     const result = await authControllers.userLogin(req.body);
@@ -34,7 +44,6 @@ router.post('/login', validateSchema(userLoginSchema), async (req, res, next) =>
 router.post('/logout', async (req, res, next) => {
   try {
     const payload = {refreshToken: req.body.refreshToken, userId: req.body.userId};
-    console.log(payload);
     const result = await authControllers.userLogout(payload);
     res.clearCookie && res.clearCookie('refreshToken');
     res.status(200).json(result);
@@ -52,27 +61,5 @@ router.post('/refresh', async (req, res, next) => {
     next(err);
   }
 });
-
-// TO BE IMPLEMENTED BY MR ASAAAAAAAAAD
-// router.get('/verify-email/:token', async (req, res) => {
-//     try {
-//         const result = await authControllers.verifyEmail(req.params.token);
-//         res.status(201).json(result);
-//     } catch (err) {
-//         const status = err.status || 500;
-//         res.status(status).json({ error: err.message });
-//     }
-// });
-//
-//
-// router.post('/resend-verification', async (req, res) => {
-//     try {
-//         const result = await authControllers.resendVerification(req.body);
-//         res.status(201).json(result);
-//     } catch (err) {
-//         const status = err.status || 500;
-//         res.status(status).json({ error: err.message });
-//     }
-// });
 
 module.exports = router;

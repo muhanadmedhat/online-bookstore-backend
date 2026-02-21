@@ -50,11 +50,4 @@ router.delete('/:id', verifyToken, authorize('admin'), async (req, res) => {
   res.json(updatedBook);
 });
 
-// DELETE
-
-// router.delete('/:id', async (req, res) => {
-//   const {id} = req.params;
-//   const deletedBook = await bookController.remove(id);
-//   res.json(deletedBook);
-// });
 module.exports = router;

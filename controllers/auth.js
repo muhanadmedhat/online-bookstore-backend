@@ -2,6 +2,7 @@ const process = require('node:process');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CustomError = require('../helpers/CustomError');
+const {generateVerificationCode, sendVerificationCode, hashCode} = require('../helpers/email');
 const User = require('../models/users');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -9,7 +10,16 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET || JWT_SECRET;
 
 async function userRegister(data) {
   try {
-    const user = await User.create(data);
+    // const user = await User.create(data);
+    const code = generateVerificationCode();
+    const hashedCode = hashCode(code);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    const user = await User.create({
+      ...data,
+      verificationCode: hashedCode,
+      verificationCodeExpiry: expiry
+    });
+    await sendVerificationCode(user.email, code);
     const tokens = user.generateJwt();
     user.refreshTokenHash = tokens.refreshTokenHash;
     await user.save();
@@ -18,7 +28,25 @@ async function userRegister(data) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
-
+async function verifyEmail(code) {
+  try {
+    if (!code) throw new CustomError({statusCode: 400, message: 'Verification code is required', code: 'EMPTY_CODE'});
+    const hashedCode = hashCode(code);
+    const user = await User.findOne({
+      verificationCode: hashedCode,
+      verificationCodeExpiry: {$gt: Date.now()}
+    });
+    if (!user) throw new CustomError({statusCode: 400, message: 'Invalid or expired code', code: 'INVALID_CODE'});
+    user.isVerified = true;
+    user.verificationCode = undefined;
+    user.verificationCodeExpiry = undefined;
+    await user.save();
+    return true;
+  } catch (error) {
+    if (error instanceof CustomError) throw error;
+    throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
+  }
+}
 async function userLogin(data) {
   try {
     const user = await User.findOne({email: data.email}).exec();
@@ -30,8 +58,9 @@ async function userLogin(data) {
     if (!isValid) {
       throw new CustomError({statusCode: 401, message: 'Invalid email or password', code: 'INVALID_CREDENTIALS'});
     }
-
-    // check if the email is verified or not
+    if (!user.isVerified) {
+      throw new CustomError({statusCode: 403, message: 'Please verify your email to login', code: 'EMAIL_NOT_VERIFIED'});
+    }
 
     const tokens = user.generateJwt();
     user.refreshTokenHash = tokens.refreshTokenHash;
@@ -94,31 +123,10 @@ async function refreshTokens(data) {
   }
 }
 
-async function verifyEmail(data) {
-  try {
-    const user = await User.create(data);
-    return {message: 'User created successfully', user, jwt};
-  } catch (err) {
-    if (err.code === 11000) throw new CustomError({statusCode: 409, message: 'Username already exists', code: 'DUPLICATE_EMAIL'});
-    throw new CustomError({statusCode: 400, message: err.message, code: 'BAD_REQUEST'});
-  }
-}
-
-async function resebdVerification(data) {
-  try {
-    const user = await User.create(data);
-    return {message: 'User created successfully', user, jwt};
-  } catch (err) {
-    if (err.code === 11000) throw new CustomError({statusCode: 409, message: 'Username already exists', code: 'DUPLICATE_EMAIL'});
-    throw new CustomError({statusCode: 400, message: err.message, code: 'BAD_REQUEST'});
-  }
-}
-
 module.exports = {
   userRegister,
   userLogin,
   userLogout,
   verifyEmail,
-  resebdVerification,
   refreshTokens
 };

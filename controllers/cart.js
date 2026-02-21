@@ -11,7 +11,6 @@ async function getUserCart(userId) {
 }
 
 async function addUserCart(userId, addedItems) {
-  console.log(addedItems);
   const addedBook = await books.findOne({_id: addedItems.book});
   // check if there is book with this ID
   if (!addedBook) {
@@ -30,7 +29,6 @@ async function addUserCart(userId, addedItems) {
   const itemInCart = userCart.items.find((item) => item.book.toString() === addedItems.book);
   // check if the item is already in cart
   if (itemInCart) {
-    console.log('Item in cart');
     throw new CustomError({statusCode: 409, code: 'ITEMS_DUPLICATION', message: 'This item is already in cart'});
   }
   userCart.items.push(addedItems);
@@ -57,7 +55,6 @@ async function updateBookQuantity(userId, bookId, newQuantity) {
     return userCart;
   }
   updatedBook.quantity = newQuantity;
-  console.log(updatedBook);
   await userCart.save();
   return updatedBook;
 }

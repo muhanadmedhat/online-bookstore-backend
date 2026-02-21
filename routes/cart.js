@@ -5,7 +5,6 @@ const cartSchema = require('../validations/cart');
 
 const router = express.Router();
 
-// add auth middleware
 router.get('/', verifyToken, authorize('user'), async (req, res, next) => {
   try {
     const user = req.user.id;

@@ -6,14 +6,6 @@ const {userUpdateProfileSchema, userUpdatePasswordSchema} = require('../validati
 const router = express.Router();
 router.use(verifyToken);
 
-router.get('/me/test', async (req, res, next) => {
-  try {
-    res.status(201).json({result: 'Connection Ok'});
-  } catch (err) {
-    next(err);
-  }
-});
-
 router.get('/me', async (req, res, next) => {
   try {
     const result = await userControllers.getUserProfile(req.user.id);

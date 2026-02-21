@@ -1,16 +1,15 @@
 const router = require('express').Router();
-
 const authorController = require('../controllers/author');
-const validate = require('../middlewares/validate');
+const {verifyToken, authorize, validateSchema} = require('../middlewares/');
 const {createAuthorSchema, updateAuthorSchema} = require('../validations/author');
 
 router.get('/', authorController.getAllAuthors);
 router.get('/:id', authorController.getAuthorById);
 
-router.post('/', validate(createAuthorSchema), authorController.createAuthor);
+router.post('/', verifyToken, authorize('admin'), validateSchema(createAuthorSchema), authorController.createAuthor);
 
-router.patch('/:id', validate(updateAuthorSchema), authorController.updateAuthor);
+router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateAuthorSchema), authorController.updateAuthor);
 
-router.delete('/:id', authorController.deleteAuthor);
+router.delete('/:id', verifyToken, authorize('admin'), authorController.deleteAuthor);
 
 module.exports = router;
