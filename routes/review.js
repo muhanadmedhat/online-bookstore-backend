@@ -1,20 +1,20 @@
 const express = require('express');
 const {reviewsController} = require('../controllers');
-const {validateSchema} = require('../middlewares');
+const {validateSchema, verifyToken, authorize} = require('../middlewares');
 const valdiations = require('../validations/review');
 
 const router = express.Router();
 
 // GET
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   const reviews = await reviewsController.get(req.query);
   res.json(reviews);
 });
 
 // POST
 
-router.post('/', validateSchema(valdiations.createReviewSchema), async (req, res) => {
+router.post('/', verifyToken, validateSchema(valdiations.createReviewSchema), async (req, res) => {
   const {body} = req;
   const review = await reviewsController.add(body);
   res.json(review);
@@ -22,7 +22,7 @@ router.post('/', validateSchema(valdiations.createReviewSchema), async (req, res
 
 // UPDATE
 
-router.patch('/:id', validateSchema(valdiations.updateReviewSchema), async (req, res) => {
+router.patch('/:id', verifyToken, validateSchema(valdiations.updateReviewSchema), async (req, res) => {
   const {id} = req.params;
   const {body} = req;
   const updated = await reviewsController.update(id, body);
@@ -31,7 +31,7 @@ router.patch('/:id', validateSchema(valdiations.updateReviewSchema), async (req,
 
 // DELETE
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const {id} = req.params;
   const deleted = await reviewsController.remove(id);
   res.json(deleted);

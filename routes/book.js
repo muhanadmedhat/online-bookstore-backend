@@ -1,26 +1,26 @@
 const express = require('express');
 const {booksController} = require('../controllers');
-const {validateSchema} = require('../middlewares/');
+const {validateSchema, uploadCover, verifyToken, authorize} = require('../middlewares/');
 const validations = require('../validations/book');
 
 const router = express.Router();
 
 // GET
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   const books = await booksController.get(req.query);
   res.json(books);
 });
 
 // GET POPULAR
 
-router.get('/popular', async (req, res) => {
+router.get('/popular', verifyToken, async (req, res) => {
   const popular = await booksController.getPopular();
   res.json(popular);
 });
 
 // GET BOOK REVIEWS
-router.get('/:id/reviews', async (req, res) => {
+router.get('/:id/reviews', verifyToken, async (req, res) => {
   const {id} = req.params;
   const reviews = await booksController.getBookReviews(id);
   res.json(reviews);
@@ -28,7 +28,7 @@ router.get('/:id/reviews', async (req, res) => {
 
 // GET BY ID
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   const {id} = req.params;
   const book = await booksController.getById(id);
   res.json(book);
@@ -36,24 +36,22 @@ router.get('/:id', async (req, res) => {
 
 // POST
 
-router.post('/', validateSchema(validations.createBookSchema), async (req, res) => {
-  const {body} = req;
-  const book = await booksController.add(body);
+router.post('/', verifyToken, authorize('admin'), uploadCover, validateSchema(validations.createBookSchema), async (req, res) => {
+  const book = await booksController.add(req);
   res.status(201).json(book);
 });
 
 // PATCH
 
-router.patch('/:id', validateSchema(validations.updateBookSchema), async (req, res) => {
-  const {body} = req;
+router.patch('/:id', verifyToken, authorize('admin'), uploadCover, validateSchema(validations.updateBookSchema), async (req, res) => {
   const {id} = req.params;
-  const updatedBook = await booksController.update(id, body);
+  const updatedBook = await booksController.update(id, req);
   res.json(updatedBook);
 });
 
 // DELETE
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, authorize('admin'), async (req, res) => {
   const {id} = req.params;
   const updatedBook = await booksController.softDelete(id);
   res.json(updatedBook);

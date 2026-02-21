@@ -3,7 +3,7 @@ const CustomError = require('../helpers/CustomError');
 
 function uploadCover(req, res, next) {
   upload.single('coverImage')(req, res, (err) => {
-    if (err) return next(new CustomError(err.message, 400, 'UPLOAD_FAILED'));
+    if (err) return next(new CustomError({statusCode: 400, message: err.message, code: 'UPLOAD_FAILED'}));
     next();
   });
 }

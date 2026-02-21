@@ -44,10 +44,14 @@ async function getById(id) {
   }
 }
 
-async function add(bookData) {
+async function add(req) {
   try {
-    return await Book.create(bookData);
+    const bookData = req.body;
+    const coverUrl = req.file?.path;
+    if (!coverUrl) throw new CustomError({statusCode: 400, message: 'Add The Book', code: 'BOOKCOVER_NOT_FOUND'});
+    return await Book.create({...bookData, coverUrl});
   } catch (error) {
+    if (error instanceof CustomError) throw error;
     if (error.name === 'ValidationError') {
       throw new CustomError({statusCode: 422, message: error.message, code: 'BOOK_VALIDATION_FAILED'});
     }
@@ -56,8 +60,13 @@ async function add(bookData) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
-async function update(id, updatedFields) {
+async function update(id, req) {
   try {
+    const updatedFields = req.body;
+    const coverUrl = req.file?.path;
+    if (Object.keys(updatedFields).length === 0 && !coverUrl)
+      throw new CustomError({statusCode: 400, message: 'At least one field must be provided', code: 'NO_FIELDS_PROVIDED'});
+    if (coverUrl) updatedFields.coverUrl = coverUrl;
     const updated = await Book.findByIdAndUpdate(id, {
       $set: updatedFields
     }, {
@@ -101,6 +110,7 @@ async function getPopular() {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
+
 async function getBookReviews(id) {
   try {
     const book = await Book.findById(id);
