@@ -1,4 +1,4 @@
-const { string } = require('joi');
+
 const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
@@ -16,49 +16,56 @@ const orderSchema = mongoose.Schema({
         required: true
       },
       quantity: {
-        type: number,
+        type: Number,
         min: 1,
         required: true
       },
       unit_price: {
-        type: number
+        type: Number,
+        required: true
       }
     }
   ],
   status: {
-    type: string,
+    type: String,
     enum: ['processing', 'out_for_delivery', 'delivered'],
     default: 'processing'
   },
   payment_status: {
-    type: string,
+    type: String,
     enum: ['pending', 'success'],
     default: 'pending'
   },
   payment_method: {
-    type: string,
+    type: String,
     enum: ['COD', 'online'],
     default: 'COD'
   },
   shipping_address: {
     street: {
-      type: string
+      type: String,
+      required: true
     },
     city: {
-      type: string
+      type: String,
+      required: true
     },
     state: {
-      type: string
+      type: String,
+      required: true
     },
     zip: {
-      type: string
+      type: String,
+      required: true
     },
     country: {
-      type: string
+      type: String,
+      required: true
     }
   },
   total_price: {
-    type: Number
+    type: Number,
+    required: true
   }
 }, { timestamps: true });
 

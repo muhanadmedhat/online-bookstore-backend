@@ -1,3 +1,3 @@
 module.exports = {
-  cartQuantityValidation: require('./cart')
+  validateSchema: require('./validate')
 };

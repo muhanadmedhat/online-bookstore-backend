@@ -1,14 +1,11 @@
-// Suggested approach
+const CustomError = require('../helpers/CustomError');
 
-// validations/user.js
-// export const registerSchema = Joi.object({ ... })
+function validate(schema) {
+  return function (req, res, next) {
+    const { error } = schema.validate(req.body);
+    if (error) return next(new CustomError({ statusCode: 400, message: error.message, code: 'VALIDATION_FAILED' }));
+    next();
+  };
+}
 
-// // middlewares/validate.js
-// const validate = (schema) => (req, res, next) => {
-//   const { error } = schema.validate(req.body)
-//   if (error) return next(new CustomError(error.message, 400))
-//   next()
-// }
-
-// // routes/user.js
-// router.post('/register', validate(registerSchema), register)
+module.exports = validate;

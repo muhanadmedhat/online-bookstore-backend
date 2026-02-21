@@ -1,6 +1,7 @@
 const express = require('express');
 const { cartController } = require('../controllers');
-const { cartQuantityValidation } = require('../middlewares');
+const cartSchema = require('../validations/cart');
+const { validateSchema } = require('../middlewares/');
 const router = express.Router();
 
 //add auth middleware
@@ -19,7 +20,7 @@ router.post('/', async (req, res) => {
   });
 });
 
-router.patch('/:bookId', cartQuantityValidation, async (req, res) => {
+router.patch('/:bookId', validateSchema(cartSchema), async (req, res) => {
   const { bookId } = req.params;
   const { user, quantity } = req.body;
   const updatedBook = await cartController.updateBookQuantity(user, bookId, quantity);
