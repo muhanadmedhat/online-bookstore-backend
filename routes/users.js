@@ -1,8 +1,7 @@
 const express = require('express');
 const {userControllers} = require('../controllers');
-const {verifyToken, authorize} = require('../validations/auth.js');
-
-const {validateUserProfileUpdate, validateUserPasswordUpdate} = require('../validations/users.js');
+const {verifyToken, authorize, validateSchema} = require('../middlewares/');
+const {userUpdateProfileSchema, userUpdatePasswordSchema} = require('../validations/users.js');
 
 const router = express.Router();
 router.use(verifyToken);
@@ -24,7 +23,7 @@ router.get('/me', async (req, res, next) => {
   }
 });
 
-router.put('/me', validateUserProfileUpdate, async (req, res, next) => {
+router.put('/me', validateSchema(userUpdateProfileSchema), async (req, res, next) => {
   try {
     const result = await userControllers.updateUserProfile(req.user.id, req.body);
     res.status(201).json(result);
@@ -33,7 +32,7 @@ router.put('/me', validateUserProfileUpdate, async (req, res, next) => {
   }
 });
 
-router.put('/me/passwords', validateUserPasswordUpdate, async (req, res, next) => {
+router.put('/me/passwords', validateSchema(userUpdatePasswordSchema), async (req, res, next) => {
   try {
     const result = await userControllers.updateUserPassword(req.user.id, req.body);
     res.status(201).json(result);

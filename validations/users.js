@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const {validateSchema} = require('../middlewares/');
 
 const userUpdateProfileSchema = Joi.object({
   email: Joi.string()
@@ -55,11 +54,7 @@ const userUpdatePasswordSchema = Joi.object({
     })
 });
 
-const validateUserProfileUpdate = validateSchema(userUpdateProfileSchema, 'body');
-
-const validateUserPasswordUpdate = validateSchema(userUpdatePasswordSchema, 'body');
-
 module.exports = {
-  validateUserProfileUpdate,
-  validateUserPasswordUpdate
+  userUpdateProfileSchema,
+  userUpdatePasswordSchema
 };

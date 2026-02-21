@@ -1,9 +1,9 @@
 const express = require('express');
+const {validateSchema} = require('../middlewares/');
+const {userRegisterSchema, userLoginSchema} = require('../validations/auth.js');
 
 const router = express.Router();
-
 const {authControllers} = require('../controllers');
-const {validateUserRegister, validateUserLogin} = require('../validations/auth.js');
 
 router.get('/me/test', async (req, res, next) => {
   try {
@@ -13,7 +13,7 @@ router.get('/me/test', async (req, res, next) => {
   }
 });
 
-router.post('/register', validateUserRegister, async (req, res, next) => {
+router.post('/register', validateSchema(userRegisterSchema), async (req, res, next) => {
   try {
     const result = await authControllers.userRegister(req.body);
     res.status(201).json(result);
@@ -22,7 +22,7 @@ router.post('/register', validateUserRegister, async (req, res, next) => {
   }
 });
 
-router.post('/login', validateUserLogin, async (req, res, next) => {
+router.post('/login', validateSchema(userLoginSchema), async (req, res, next) => {
   try {
     const result = await authControllers.userLogin(req.body);
     res.status(200).json(result);
