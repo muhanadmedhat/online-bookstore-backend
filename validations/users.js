@@ -56,7 +56,6 @@ const userUpdatePasswordSchema = Joi.object({
 });
 
 const validateUserProfileUpdate = validate(userUpdateProfileSchema, 'body');
-
 const validateUserPasswordUpdate = validate(userUpdatePasswordSchema, 'body');
 
 module.exports = {

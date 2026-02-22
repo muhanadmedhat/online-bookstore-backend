@@ -25,6 +25,7 @@ router.get('/me', async (req, res, next) => {
 
 router.put('/me', validateUserProfileUpdate, async (req, res, next) => {
     try {
+        console.log(req.user.id);
         const result = await userControllers.updateUserProfile(req.user.id, req.body);
         res.status(201).json(result);
     } catch (err) {

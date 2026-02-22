@@ -1,8 +1,15 @@
 const express = require("express");
 const routes = require('./routes');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(routes);
 
 app.use((req, res) => {
@@ -21,3 +28,5 @@ app.use((error, req, res, next) => {
 });
 
 module.exports = app;
+
+
