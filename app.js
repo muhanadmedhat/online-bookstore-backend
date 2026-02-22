@@ -1,26 +1,28 @@
-const express = require("express");
+const cors = require('cors');
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger.js');
+const CustomError = require('./helpers/CustomError');
+const router = require('./routes');
+
 const app = express();
-
-const routes = require("./routes");
-
+app.use(cors());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 
-app.get("/health", (req, res) => {
-  res.json({ message: "API is running" });
+app.use('/health', (req, res) => {
+  res.json({message: 'API is running'});
 });
 
-// base prefix
-app.use("/api/v1", routes);
+app.use(router);
 
-// 404
-app.use((req, res) => {
-  res.status(404).json({ message: "Not Found" });
-});
-
-// error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ message: "Server error" });
+app.use((error, req, res, next) => {
+  console.error('ERROR:', `${error}`);
+  if (error instanceof CustomError) {
+    res.status(error.statusCode).json({error: error.message});
+  } else {
+    res.status(500).json({error: 'Internal Server Error'});
+  }
 });
 
 module.exports = app;

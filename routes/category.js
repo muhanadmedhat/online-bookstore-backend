@@ -1,46 +1,47 @@
 const router = require('express').Router();
-const authorController = require('../controllers/author');
+const categoryController = require('../controllers/category');
 const {verifyToken, authorize, validateSchema} = require('../middlewares/');
-const {createAuthorSchema, updateAuthorSchema} = require('../validations/author');
+const {createCategorySchema, updateCategorySchema} = require('../validations/category');
 
 /**
  * @swagger
- * /authors:
+ * /categories:
  *   get:
- *     summary: Get all authors
- *     tags: [Authors]
+ *     summary: Get all categories
+ *     tags: [Categories]
  *     responses:
  *       200:
- *         description: A list of authors
+ *         description: A list of categories
  */
-router.get('/', authorController.getAllAuthors);
+router.get('/', categoryController.getAllCategories);
+
 /**
  * @swagger
- * /authors/{id}:
+ * /categories/{id}:
  *   get:
- *     summary: Get an author by ID
- *     tags: [Authors]
+ *     summary: Get a category by ID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: Author ID
+ *         description: Category ID
  *     responses:
  *       200:
- *         description: The author data
+ *         description: The category data
  *       404:
- *         description: Author not found
+ *         description: Category not found
  */
-router.get('/:id', authorController.getAuthorById);
+router.get('/:id', categoryController.getCategoryById);
 
 /**
  * @swagger
- * /authors:
+ * /categories:
  *   post:
- *     summary: Create a new author
- *     tags: [Authors]
+ *     summary: Create a new category
+ *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -54,11 +55,9 @@ router.get('/:id', authorController.getAuthorById);
  *             properties:
  *               name:
  *                 type: string
- *               bio:
- *                 type: string
  *     responses:
  *       201:
- *         description: Author created successfully
+ *         description: Category created successfully
  *       400:
  *         description: Validation error
  *       401:
@@ -66,14 +65,14 @@ router.get('/:id', authorController.getAuthorById);
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.post('/', verifyToken, authorize('admin'), validateSchema(createAuthorSchema), authorController.createAuthor);
+router.post('/', verifyToken, authorize('admin'), validateSchema(createCategorySchema), categoryController.createCategory);
 
 /**
  * @swagger
- * /authors/{id}:
+ * /categories/{id}:
  *   patch:
- *     summary: Update an existing author
- *     tags: [Authors]
+ *     summary: Update an existing category
+ *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -82,7 +81,7 @@ router.post('/', verifyToken, authorize('admin'), validateSchema(createAuthorSch
  *         required: true
  *         schema:
  *           type: string
- *         description: Author ID
+ *         description: Category ID
  *     requestBody:
  *       required: true
  *       content:
@@ -92,26 +91,24 @@ router.post('/', verifyToken, authorize('admin'), validateSchema(createAuthorSch
  *             properties:
  *               name:
  *                 type: string
- *               bio:
- *                 type: string
  *     responses:
  *       200:
- *         description: Author updated successfully
+ *         description: Category updated successfully
  *       404:
- *         description: Author not found
+ *         description: Category not found
  *       401:
  *         description: Authentication required
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateAuthorSchema), authorController.updateAuthor);
+router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateCategorySchema), categoryController.updateCategory);
 
 /**
  * @swagger
- * /authors/{id}:
+ * /categories/{id}:
  *   delete:
- *     summary: Delete an author
- *     tags: [Authors]
+ *     summary: Delete a category
+ *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -120,17 +117,17 @@ router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateAutho
  *         required: true
  *         schema:
  *           type: string
- *         description: Author ID
+ *         description: Category ID
  *     responses:
  *       200:
- *         description: Author deleted successfully
+ *         description: Category deleted successfully
  *       404:
- *         description: Author not found
+ *         description: Category not found
  *       401:
  *         description: Authentication required
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.delete('/:id', verifyToken, authorize('admin'), authorController.deleteAuthor);
+router.delete('/:id', verifyToken, authorize('admin'), categoryController.deleteCategory);
 
 module.exports = router;
