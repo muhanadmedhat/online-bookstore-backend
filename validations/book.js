@@ -10,12 +10,12 @@ const createBookSchema = Joi.object({
 
 });
 const updateBookSchema = Joi.object({
-  name: Joi.string().min(3).max(30),
-  author: Joi.string(),
+  name: Joi.string().min(3).max(30).empty(''),
+  author: Joi.string().empty(''),
   categories: Joi.array().items(Joi.string()).min(1),
   price: Joi.number().min(0),
   stock: Joi.number().integer().min(0),
-  description: Joi.string().min(30).max(500)
+  description: Joi.string().min(30).max(500).empty('')
 });
 
 module.exports = {createBookSchema, updateBookSchema};
