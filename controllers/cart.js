@@ -11,6 +11,8 @@ async function getUserCart(userId) {
 }
 
 async function addUserCart(userId, addedItems) {
+  console.log(userId);
+  console.log(addedItems);
   const addedBook = await books.findOne({_id: addedItems.book});
   // check if there is book with this ID
   if (!addedBook) {

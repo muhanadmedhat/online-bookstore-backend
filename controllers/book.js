@@ -19,7 +19,7 @@ async function get(queryParams) {
     if (maxPrice) filter.price.$lte = Number(maxPrice);
     if (search) filter.$text = {$search: search};
     const total = await Book.countDocuments(filter);
-    const books = await Book.find(filter).skip(skip).limit(safeLimit);
+    const books = await Book.find(filter).skip(skip).limit(safeLimit).populate('author').populate('categories');
     return {
       books,
       total,

@@ -32,7 +32,7 @@ router.get('/me', async (req, res, next) => {
 /**
  * @swagger
  * /users/me:
- *   put:
+ *   patch:
  *     summary: Update the current logged-in user's profile
  *     tags: [Users]
  *     security:
@@ -58,7 +58,7 @@ router.get('/me', async (req, res, next) => {
  *       401:
  *         description: Authentication required
  */
-router.put('/me', validateSchema(userUpdateProfileSchema), async (req, res, next) => {
+router.patch('/me', validateSchema(userUpdateProfileSchema), async (req, res, next) => {
   try {
     const result = await userControllers.updateUserProfile(req.user.id, req.body);
     res.status(201).json(result);
@@ -70,7 +70,7 @@ router.put('/me', validateSchema(userUpdateProfileSchema), async (req, res, next
 /**
  * @swagger
  * /users/me/passwords:
- *   put:
+ *   patch:
  *     summary: Update the current logged-in user's password
  *     tags: [Users]
  *     security:
@@ -99,7 +99,7 @@ router.put('/me', validateSchema(userUpdateProfileSchema), async (req, res, next
  *       401:
  *         description: Authentication required or wrong current password
  */
-router.put('/me/passwords', validateSchema(userUpdatePasswordSchema), async (req, res, next) => {
+router.patch('/me/passwords', validateSchema(userUpdatePasswordSchema), async (req, res, next) => {
   try {
     const result = await userControllers.updateUserPassword(req.user.id, req.body);
     res.status(201).json(result);

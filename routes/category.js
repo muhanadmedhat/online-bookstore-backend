@@ -70,7 +70,7 @@ router.post('/', verifyToken, authorize('admin'), validateSchema(createCategoryS
 /**
  * @swagger
  * /categories/{id}:
- *   put:
+ *   patch:
  *     summary: Update an existing category
  *     tags: [Categories]
  *     security:
@@ -101,7 +101,7 @@ router.post('/', verifyToken, authorize('admin'), validateSchema(createCategoryS
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.put('/:id', verifyToken, authorize('admin'), validateSchema(updateCategorySchema), categoryController.updateCategory);
+router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateCategorySchema), categoryController.updateCategory);
 
 /**
  * @swagger
