@@ -10,7 +10,7 @@ async function get(queryParams) {
     const skip = (safePage - 1) * safeLimit;
     const filter = {};
     if (category)
-      filter.category = category;
+      filter.categories = category;
     if (author)
       filter.author = author;
     if (minPrice || maxPrice)
@@ -34,7 +34,7 @@ async function get(queryParams) {
 
 async function getById(id) {
   try {
-    const book = await Book.findById(id);
+    const book = await Book.findById(id).populate('author').populate('categories');
     if (!book) throw new CustomError({statusCode: 404, message: 'Book not found', code: 'BOOK_NOT_FOUND'});
     return book;
   } catch (error) {
@@ -42,7 +42,6 @@ async function getById(id) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
-
 async function add(req) {
   try {
     const bookData = req.body;
