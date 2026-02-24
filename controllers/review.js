@@ -74,11 +74,18 @@ async function adminRemove(id) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
-async function update(id, updatedFields) {
+async function update(id, userId, updatedFields = {}) {
   try {
-    const updated = await Review.findByIdAndUpdate(
-      id,
-      {$set: updatedFields},
+    const safeFields = {};
+    Object.entries(updatedFields).forEach(([key, value]) => {
+      if (key === 'comment' || key === 'rating') {
+        safeFields[key] = value;
+      }
+    });
+    if (!Object.keys(safeFields).length) throw new CustomError({statusCode: 400, message: 'No updates was found', code: 'UPDATES_NOT_FOUND'});
+    const updated = await Review.findOneAndUpdate(
+      {_id: id, user: userId},
+      {$set: safeFields},
       {
         runValidators: true,
         returnDocument: 'after'

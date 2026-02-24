@@ -17,7 +17,7 @@ function hashCode(code) {
 
 async function sendVerificationCode(email, code) {
   await transporter.sendMail({
-    from: process.env.BREVO_FROM_EMAIL,
+    from: process.env.EMAIL_USER,
     to: email,
     subject: 'Verify your email',
     html: `<p>Your verification code is: <strong>${code}</strong>. Expires in 10 minutes.</p>`

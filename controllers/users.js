@@ -1,11 +1,20 @@
-const jwt = require('jsonwebtoken');
 const CustomError = require('../helpers/CustomError');
 const User = require('../models/users');
 
 async function createUserProfile(data) {
   try {
     const user = await User.create(data);
-    return {message: 'User created successfully', user, jwt};
+    const tokens = user.generateJwt();
+    user.refreshTokenHash = tokens.refreshTokenHash;
+    await user.save();
+    return {
+      message: 'User created successfully',
+      user,
+      tokens: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      }
+    };
   } catch (err) {
     if (err.code === 11000) throw new CustomError({statusCode: 409, message: 'Username already exists', code: 'DUPLICATE_EMAIL'});
     throw new CustomError({statusCode: 400, message: err.message, code: 'BAD_REQUEST'});
