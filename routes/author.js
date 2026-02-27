@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const authorController = require('../controllers/author');
-const {verifyToken, authorize, validateSchema} = require('../middlewares/');
+const {verifyToken, authorize, validateSchema, uploadAuthorImage} = require('../middlewares/');
 const {createAuthorSchema, updateAuthorSchema} = require('../validations/author');
 
 /**
@@ -79,7 +79,7 @@ router.get('/:id', authorController.getAuthorById);
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.post('/', verifyToken, authorize('admin'), validateSchema(createAuthorSchema), authorController.createAuthor);
+router.post('/', verifyToken, authorize('admin'), uploadAuthorImage, validateSchema(createAuthorSchema), authorController.createAuthor);
 
 /**
  * @swagger

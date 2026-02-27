@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CustomError = require('../helpers/CustomError');
 const Author = require('../models/author');
 
 exports.getAllAuthors = async (req, res, next) => {
@@ -43,9 +44,11 @@ exports.getAuthorById = async (req, res, next) => {
 
 exports.createAuthor = async (req, res, next) => {
   try {
-    const {name, bio} = req.body;
-    const author = await Author.create({name, bio});
-    res.status(201).json(author);
+    const auhtorData = req.body;
+    const authorImage = req.file?.path;
+    if (!authorImage) throw new CustomError({statusCode: 400, message: 'No Author Image', code: 'AUTHOR_IMAGE_REQUIRED'});
+    const createdAuthor = await Author.create({...auhtorData, authorImage});
+    res.status(201).json(createdAuthor);
   } catch (err) {
     next(err);
   }

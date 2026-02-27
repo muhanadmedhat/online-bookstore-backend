@@ -4,11 +4,22 @@ const Book = require('../models/book');
 async function get(queryParams) {
   try {
     const MAX_LIMIT = 50;
-    const {category, author, minPrice, maxPrice, search, limit, page} = queryParams;
+    const {category, author, minPrice, maxPrice, search, sort, limit, page} = queryParams;
     const safePage = Math.max(Number.parseInt(page) || 1, 1);
     const safeLimit = Math.min(Number.parseInt(limit) || 10, MAX_LIMIT);
     const skip = (safePage - 1) * safeLimit;
     const filter = {};
+    let sortObj = {createdAt: -1};
+    if (sort) {
+      sortObj = {};
+      const fields = sort.split(',');
+      for (const field of fields) {
+        const trimmed = field.trim();
+        const direction = trimmed.startsWith('-') ? -1 : 1;
+        const name = trimmed.replace('-', '');
+        sortObj[name] = direction;
+      }
+    }
     if (category)
       filter.categories = category;
     if (author)
@@ -17,9 +28,9 @@ async function get(queryParams) {
       filter.price = {};
     if (minPrice) filter.price.$gte = Number(minPrice);
     if (maxPrice) filter.price.$lte = Number(maxPrice);
-    if (search) filter.$text = {$search: search};
+    if (search) filter.name = {$regex: search, $options: 'i'};
     const total = await Book.countDocuments(filter);
-    const books = await Book.find(filter).skip(skip).limit(safeLimit).populate('author').populate('categories');
+    const books = await Book.find(filter).skip(skip).limit(safeLimit).sort(sortObj).populate('author').populate('categories');
     return {
       books,
       total,
@@ -30,7 +41,14 @@ async function get(queryParams) {
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
-// add pagination later
+
+async function getSuggestions(queryParams) {
+  const searchTerm = queryParams.search || queryParams.q || '';
+  if (searchTerm.trim().length < 2) return [];
+  return Book.find({name: {$regex: searchTerm, $options: 'i'}})
+    .select({name: 1, _id: 0})
+    .limit(5);
+}
 
 async function getById(id) {
   try {
@@ -114,4 +132,4 @@ async function getPopular() {
 // async function remove(id) {
 //   return await Book.findByIdAndDelete(id);
 // }
-module.exports = {get, add, update, softDelete, getById, getPopular};
+module.exports = {get, add, update, softDelete, getById, getPopular, getSuggestions};

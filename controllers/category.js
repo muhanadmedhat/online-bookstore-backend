@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CustomError = require('../helpers/CustomError');
 const Category = require('../models/category');
 
 exports.getAllCategories = async (req, res, next) => {
@@ -43,10 +44,11 @@ exports.getCategoryById = async (req, res, next) => {
 
 exports.createCategory = async (req, res, next) => {
   try {
-    const {name} = req.body;
-
-    const category = await Category.create({name});
-    res.status(201).json(category);
+    const categoryData = req.body;
+    const categoryImage = req.file?.path;
+    if (!categoryImage) throw new CustomError({statusCode: 400, message: 'No Category Image', code: 'CATEGORY_IMAGE_REQUIRED'});
+    const createdCategory = await Category.create({...categoryData, categoryImage});
+    res.status(201).json(createdCategory);
   } catch (err) {
     next(err);
   }

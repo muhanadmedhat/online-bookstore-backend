@@ -5,21 +5,21 @@ const carts = require('../models/cart.js');
 const orders = require('../models/order');
 
 async function createOrder(userId, shippingAddress, payementMethod) {
-  const userCart = await carts.findOne({ user: userId }).populate({ path: 'items.book', populate: [{ path: 'author' }, { path: 'categories' }] });
+  const userCart = await carts.findOne({user: userId}).populate({path: 'items.book', populate: [{path: 'author'}, {path: 'categories'}]});
   if (!userCart) {
-    throw new CustomError({ statusCode: 404, code: 'NO_CART', message: 'This user has no cart' });
+    throw new CustomError({statusCode: 404, code: 'NO_CART', message: 'This user has no cart'});
   }
   const session = await mongoose.startSession();
   await session.startTransaction();
   const orderItems = [];
   try {
     for (const item of userCart.items) {
-      const wantedBook = await books.findOne({ _id: item.book }).session(session);
+      const wantedBook = await books.findOne({_id: item.book}).session(session);
       if (!wantedBook) {
-        throw new CustomError({ statusCode: 404, code: 'DELETED_ITEM', message: 'This book is not avalaible at the moment' });
+        throw new CustomError({statusCode: 404, code: 'DELETED_ITEM', message: 'This book is not avalaible at the moment'});
       }
       if (item.quantity > wantedBook.stock) {
-        throw new CustomError({ statusCode: 400, code: 'INSUFFECIENT_STOCK', message: 'There is not enough stock for this book' });
+        throw new CustomError({statusCode: 400, code: 'INSUFFECIENT_STOCK', message: 'There is not enough stock for this book'});
       }
       orderItems.push({
         book: item.book,
@@ -27,7 +27,7 @@ async function createOrder(userId, shippingAddress, payementMethod) {
         unit_price: wantedBook.price
       });
       wantedBook.stock -= item.quantity;
-      await wantedBook.save({ session });
+      await wantedBook.save({session});
     }
     const totalPrice = orderItems.reduce((sum, item) => {
       return sum + (item.unit_price * item.quantity);
@@ -38,9 +38,9 @@ async function createOrder(userId, shippingAddress, payementMethod) {
       shipping_address: shippingAddress,
       payment_method: payementMethod,
       total_price: totalPrice
-    }], { session });
+    }], {session});
     userCart.items = [];
-    await userCart.save({ session });
+    await userCart.save({session});
     await session.commitTransaction();
     return newOrder;
   } catch (error) {
@@ -52,14 +52,14 @@ async function createOrder(userId, shippingAddress, payementMethod) {
 }
 
 async function getUserOrders(userId, pageNumber) {
-  const totalDocuments = await orders.countDocuments({ user: userId });
+  const totalDocuments = await orders.countDocuments({user: userId});
   if (totalDocuments === 0) {
-    throw new CustomError({ statusCode: 404, code: 'NO_ORDERS', message: 'This user has no order' });
+    throw new CustomError({statusCode: 404, code: 'NO_ORDERS', message: 'This user has no order'});
   }
   const page = Math.min(Number(pageNumber) || 1, 50);
   const limit = 10;
   const skip = (page - 1) * limit;
-  const userOrders = await orders.find({ user: userId }).populate('items.book').skip(skip).limit(limit).sort({ createdAt: -1 });
+  const userOrders = await orders.find({user: userId}).populate('items.book').skip(skip).limit(limit).sort({createdAt: -1});
   return {
     total: totalDocuments,
     pages: Math.ceil(totalDocuments / limit),
@@ -81,11 +81,11 @@ async function getAllOrders(pageNumber, status, user) {
   const orderPaginated = await orders.find(filter)
     .populate({
       path: 'items.book',
-      populate: [{ path: 'author' }, { path: 'categories' }]
+      populate: [{path: 'author'}, {path: 'categories'}]
     })
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 });
+    .sort({createdAt: -1});
   const totalOrders = await orders.countDocuments(filter);
   return {
     total: totalOrders,
@@ -97,10 +97,10 @@ async function getAllOrders(pageNumber, status, user) {
 async function getSpecificOrder(user, orderId) {
   const order = await orders.findById(orderId).populate('items.book');
   if (!order) {
-    throw new CustomError({ statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID' });
+    throw new CustomError({statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID'});
   }
   if (order.user.toString() !== user.id && user.role !== 'admin') {
-    throw new CustomError({ statusCode: 403, code: 'AUTH_ERROR', message: 'The order you are trying to get does not belong to this user' });
+    throw new CustomError({statusCode: 403, code: 'AUTH_ERROR', message: 'The order you are trying to get does not belong to this user'});
   }
   return order;
 }
@@ -109,14 +109,14 @@ async function updateOrderStatus(orderId, status) {
   const orderStatus = ['processing', 'out_for_delivery', 'delivered'];
   const order = await orders.findById(orderId);
   if (!order) {
-    throw new CustomError({ statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID' });
+    throw new CustomError({statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID'});
   }
   const currentIndex = orderStatus.indexOf(order.status);
   const newIndex = orderStatus.indexOf(status);
   if (newIndex === currentIndex + 1) {
     order.status = status;
   } else {
-    throw new CustomError({ statusCode: 400, code: 'INV_TRANSITION', message: 'This transition is not valid' });
+    throw new CustomError({statusCode: 400, code: 'INV_TRANSITION', message: 'This transition is not valid'});
   }
   await order.save();
   return order;
@@ -126,14 +126,14 @@ async function updateOrderPayment(orderId, payment) {
   const paymentStatus = ['pending', 'success'];
   const order = await orders.findById(orderId);
   if (!order) {
-    throw new CustomError({ statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID' });
+    throw new CustomError({statusCode: 404, code: 'NOT_FOUND', message: 'There is nor order with this ID'});
   }
   const currentIndex = paymentStatus.indexOf(order.payment_status);
   const newIndex = paymentStatus.indexOf(payment);
   if (newIndex === currentIndex + 1) {
     order.payment_status = payment;
   } else {
-    throw new CustomError({ statusCode: 400, code: 'INV_TRANSITION', message: 'This transition is not valid' });
+    throw new CustomError({statusCode: 400, code: 'INV_TRANSITION', message: 'This transition is not valid'});
   }
   await order.save();
   return order;
