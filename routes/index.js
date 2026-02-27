@@ -1,6 +1,9 @@
 const express = require('express');
 
 const router = express.Router();
+router.get('/test', (req, res) => {
+  res.json({message: 'Test endpoint working!'});
+});
 
 router.use('/authors', require('./author'));
 router.use('/categories', require('./category'));

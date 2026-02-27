@@ -16,6 +16,19 @@ const {createAuthorSchema, updateAuthorSchema} = require('../validations/author'
 router.get('/', authorController.getAllAuthors);
 /**
  * @swagger
+ * /authors/popular:
+ *   get:
+ *     summary: Get popular authors
+ *     tags: [Authors]
+ *     responses:
+ *       200:
+ *         description: A list of popular authors
+ *       500:
+ *         description: Server error
+ */
+router.get('/popular', authorController.getPopularAuthors);
+/**
+ * @swagger
  * /authors/{id}:
  *   get:
  *     summary: Get an author by ID

@@ -89,3 +89,21 @@ exports.deleteAuthor = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getPopularAuthors = async (req, res) => {
+  try {
+    const authors = await Author.find()
+      .sort({createdAt: -1})
+      .limit(4);
+
+    res.json({
+      page: 1,
+      limit: 4,
+      total: authors.length,
+      totalPages: 1,
+      items: authors
+    });
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+};
