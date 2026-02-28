@@ -113,7 +113,6 @@ async function deleteUserProfile(userID) {
 }
 
 module.exports = {
-  createUserProfile,
   getUserProfile,
   updateUserProfile,
   updateUserPassword,

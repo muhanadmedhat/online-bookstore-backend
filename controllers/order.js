@@ -9,6 +9,9 @@ async function createOrder(userId, shippingAddress, payementMethod) {
   if (!userCart) {
     throw new CustomError({statusCode: 404, code: 'NO_CART', message: 'This user has no cart'});
   }
+  if (!userCart.items || userCart.items.length === 0) {
+    throw new CustomError({statusCode: 400, code: 'EMPTY_CART', message: 'Cannot place an order with an empty cart'});
+  }
   const session = await mongoose.startSession();
   await session.startTransaction();
   const orderItems = [];
