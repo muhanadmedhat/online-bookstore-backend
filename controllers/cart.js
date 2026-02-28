@@ -13,7 +13,7 @@ async function getUserCart(userId) {
 async function addUserCart(userId, addedItems) {
   console.log(userId);
   console.log(addedItems);
-  const addedBook = await books.findOne({_id: addedItems.book});
+  const addedBook = await books.findOne({_id: addedItems.book}).populate([{path: 'author'}, {path: 'categories'}]);
   // check if there is book with this ID
   if (!addedBook) {
     throw new CustomError({statusCode: 404, code: 'BOOK_NOT_FOUND', message: 'There is no book with this ID'});
@@ -26,15 +26,24 @@ async function addUserCart(userId, addedItems) {
   // check if this is first cart for the user
   if (!userCart) {
     const addedCart = await carts.create({user: userId, items: [addedItems]});
+    await addedCart.populate({path: 'items.book', populate: [{path: 'author'}, {path: 'categories'}]});
     return addedCart;
   }
   const itemInCart = userCart.items.find((item) => item.book.toString() === addedItems.book);
   // check if the item is already in cart
   if (itemInCart) {
-    throw new CustomError({statusCode: 409, code: 'ITEMS_DUPLICATION', message: 'This item is already in cart'});
+    const totalQuantity = itemInCart.quantity + addedItems.quantity;
+    if (totalQuantity > addedBook.stock) {
+      throw new CustomError({statusCode: 400, code: 'INSUFFECIENT_STOCK', message: 'There is not enough stock for this book'});
+    }
+    itemInCart.quantity = totalQuantity;
+    await userCart.save();
+    await userCart.populate({path: 'items.book', populate: [{path: 'author'}, {path: 'categories'}]});
+    return userCart;
   }
   userCart.items.push(addedItems);
   await userCart.save();
+  await userCart.populate({path: 'items.book', populate: [{path: 'author'}, {path: 'categories'}]});
   return userCart;
 }
 

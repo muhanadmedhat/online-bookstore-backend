@@ -10,6 +10,10 @@ const authorSchema = new mongoose.Schema(
     bio: {
       type: String,
       default: ''
+    },
+    authorImage: {
+      type: String,
+      required: true
     }
   },
   {timestamps: true}

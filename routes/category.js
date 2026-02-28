@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const categoryController = require('../controllers/category');
-const {verifyToken, authorize, validateSchema} = require('../middlewares/');
+const {verifyToken, authorize, validateSchema, uploadCategoryImage} = require('../middlewares/');
 const {createCategorySchema, updateCategorySchema} = require('../validations/category');
 
 /**
@@ -65,7 +65,7 @@ router.get('/:id', categoryController.getCategoryById);
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.post('/', verifyToken, authorize('admin'), validateSchema(createCategorySchema), categoryController.createCategory);
+router.post('/', verifyToken, authorize('admin'), uploadCategoryImage, validateSchema(createCategorySchema), categoryController.createCategory);
 
 /**
  * @swagger

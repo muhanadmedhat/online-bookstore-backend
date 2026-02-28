@@ -43,6 +43,11 @@ router.get('/', async (req, res) => {
   res.json(books);
 });
 
+router.get('/suggestions', async (req, res) => {
+  const bookTitles = await booksController.getSuggestions(req.query);
+  res.json(bookTitles);
+});
+
 // GET POPULAR
 
 /**
