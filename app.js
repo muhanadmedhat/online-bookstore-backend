@@ -1,26 +1,62 @@
-const express = require("express");
+const cors = require('cors');
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger.js');
+const CustomError = require('./helpers/CustomError');
+const logger = require('./helpers/logger.js');
+const router = require('./routes');
+
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ['\'self\''],
+        imgSrc: ['\'self\'', 'https://res.cloudinary.com'],
+        scriptSrc: ['\'self\''],
+        styleSrc: ['\'self\'']
+      }
+    }
+  })
+);
 
-const routes = require("./routes");
+app.set('trust proxy', 1);
 
+app.use(cors());
 app.use(express.json());
-
-app.get("/health", (req, res) => {
-  res.json({ message: "API is running" });
+app.use(
+  morgan('combined', {
+    stream: {
+      write: (message) => logger.http(message.trim())
+    }
+  })
+);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300
 });
 
-// base prefix
-app.use("/api/v1", routes);
+app.use('/', limiter, router);
 
-// 404
-app.use((req, res) => {
-  res.status(404).json({ message: "Not Found" });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get('/health', (req, res) => {
+  res.json({message: 'API is running'});
 });
 
-// error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ message: "Server error" });
+app.use((error, req, res, next) => {
+  logger.error({
+    message: error.message,
+    stack: error.stack
+  });
+  if (error instanceof CustomError) {
+    res.status(error.statusCode).json({error: error.message});
+  } else {
+    res.status(500).json({error: 'Internal Server Error'});
+  }
 });
 
 module.exports = app;

@@ -1,12 +1,14 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const createCategorySchema = Joi.object({
-  name: Joi.string().trim().min(2).max(50).required()
+  name: Joi.string().trim().min(2).max(50).required(),
+  description: Joi.string().min(15).max(500).required()
 });
 
 const updateCategorySchema = Joi.object({
-  name: Joi.string().trim().min(2).max(50)
-}).min(1);
+  name: Joi.string().trim().min(2).max(50),
+  description: Joi.string().min(15).max(500)
+});
 
 module.exports = {
   createCategorySchema,
