@@ -19,9 +19,6 @@ const userRegisterSchema = Joi.object({
       'any.required': 'Password is required'
     }),
 
-  role: Joi.string()
-    .optional(),
-
   firstName: Joi.string()
     .min(3)
     .max(15)
