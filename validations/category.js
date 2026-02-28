@@ -7,8 +7,8 @@ const createCategorySchema = Joi.object({
 
 const updateCategorySchema = Joi.object({
   name: Joi.string().trim().min(2).max(50),
-  description: Joi.string().min(15).max(500).required()
-}).min(1);
+  description: Joi.string().min(15).max(500)
+});
 
 module.exports = {
   createCategorySchema,

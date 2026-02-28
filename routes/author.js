@@ -117,7 +117,7 @@ router.post('/', verifyToken, authorize('admin'), uploadAuthorImage, validateSch
  *       403:
  *         description: Permission denied (Admin only)
  */
-router.patch('/:id', verifyToken, authorize('admin'), validateSchema(updateAuthorSchema), authorController.updateAuthor);
+router.patch('/:id', verifyToken, authorize('admin'), uploadAuthorImage, validateSchema(updateAuthorSchema), authorController.updateAuthor);
 
 /**
  * @swagger

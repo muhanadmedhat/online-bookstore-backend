@@ -62,10 +62,15 @@ exports.updateAuthor = async (req, res, next) => {
       return res.status(400).json({message: 'Invalid author id'});
     }
 
-    const updated = await Author.findByIdAndUpdate(id, req.body, {
+    const updatedFields = req.body;
+    const authorImage = req.file?.path;
+    if (Object.keys(updatedFields).length === 0 && !authorImage)
+      throw new CustomError({statusCode: 400, message: 'At least one field must be provided', code: 'NO_FIELDS_PROVIDED'});
+    if (authorImage) updatedFields.authorImage = authorImage;
+
+    const updated = await Author.findByIdAndUpdate(id, {$set: updatedFields}, {
       new: true,
-      runValidators: true,
-      omitUndefined: true
+      runValidators: true
     });
 
     if (!updated) return res.status(404).json({message: 'Author not found'});

@@ -62,7 +62,13 @@ exports.updateCategory = async (req, res, next) => {
       return res.status(400).json({message: 'Invalid category id'});
     }
 
-    const updated = await Category.findByIdAndUpdate(id, req.body, {
+    const updatedFields = req.body;
+    const categoryImage = req.file?.path;
+    if (Object.keys(updatedFields).length === 0 && !categoryImage)
+      throw new CustomError({statusCode: 400, message: 'At least one field must be provided', code: 'NO_FIELDS_PROVIDED'});
+    if (categoryImage) updatedFields.categoryImage = categoryImage;
+
+    const updated = await Category.findByIdAndUpdate(id, {$set: updatedFields}, {
       new: true,
       runValidators: true
     });
