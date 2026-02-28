@@ -28,7 +28,7 @@ app.set('trust proxy', 1);
 const corsOptions = {
   origin: [
     'http://localhost:4200',
-    'https://online-bookstore-frontend-11v392y0i-asaadmansours-projects.vercel.app'
+    'https://online-bookstore-frontend-mu.vercel.app/home'
   ]
 };
 app.use(cors(corsOptions));
