@@ -117,5 +117,6 @@ module.exports = {
   updateUserProfile,
   updateUserPassword,
   getUsersProfiles,
-  deleteUserProfile
+  deleteUserProfile,
+  createUserProfile
 };

@@ -18,4 +18,4 @@ const updateBookSchema = Joi.object({
   description: Joi.string().min(30).max(500).empty('')
 });
 
-module.exports = { createBookSchema, updateBookSchema };
+module.exports = {createBookSchema, updateBookSchema};

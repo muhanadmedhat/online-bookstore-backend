@@ -1,6 +1,6 @@
 const express = require('express');
-const { booksController } = require('../controllers');
-const { validateSchema, uploadCover, verifyToken, authorize } = require('../middlewares/');
+const {booksController} = require('../controllers');
+const {validateSchema, uploadCover, verifyToken, authorize} = require('../middlewares/');
 const validations = require('../validations/book');
 
 const router = express.Router();
@@ -87,7 +87,7 @@ router.get('/popular', async (req, res) => {
  *         description: Book not found
  */
 router.get('/:id', async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const book = await booksController.getById(id);
   res.json(book);
 });
@@ -203,7 +203,7 @@ router.post('/', verifyToken, authorize('admin'), uploadCover, validateSchema(va
  *         description: Permission denied (Admin only)
  */
 router.patch('/:id', verifyToken, authorize('admin'), uploadCover, validateSchema(validations.updateBookSchema), async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const updatedBook = await booksController.update(id, req);
   res.json(updatedBook);
 });
@@ -236,7 +236,7 @@ router.patch('/:id', verifyToken, authorize('admin'), uploadCover, validateSchem
  *         description: Book not found
  */
 router.delete('/:id', verifyToken, authorize('admin'), async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const updatedBook = await booksController.softDelete(id);
   res.json(updatedBook);
 });
