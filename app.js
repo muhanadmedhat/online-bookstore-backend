@@ -25,7 +25,13 @@ app.use(
 
 app.set('trust proxy', 1);
 
-app.use(cors());
+const corsOptions = {
+  origin: [
+    'http://localhost:4200',
+    'https://online-bookstore-frontend-11v392y0i-asaadmansours-projects.vercel.app'
+  ]
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(
   morgan('combined', {
