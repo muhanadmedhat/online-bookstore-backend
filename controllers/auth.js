@@ -5,8 +5,6 @@ const CustomError = require('../helpers/CustomError');
 const {generateVerificationCode, sendVerificationCode, hashCode} = require('../helpers/email');
 const User = require('../models/users');
 
-
-
 async function userRegister(data) {
   try {
     const code = generateVerificationCode();
