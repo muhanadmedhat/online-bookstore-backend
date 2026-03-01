@@ -2,7 +2,7 @@ const process = require('node:process');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CustomError = require('../helpers/CustomError');
-const {generateVerificationCode, sendVerificationCode, hashCode} = require('../helpers/email');
+const {generateVerificationCode, hashCode} = require('../helpers/email');
 const User = require('../models/users');
 
 async function userRegister(data) {
@@ -17,12 +17,12 @@ async function userRegister(data) {
       verificationCodeExpiry: expiry
     });
 
-    try {
-      await sendVerificationCode(user.email, code);
-    } catch (emailError) {
-      await User.findByIdAndDelete(user._id);
-      throw new CustomError({statusCode: 500, message: `Failed to send verification email. Error: ${emailError.message}`, code: 'EMAIL_SEND_FAILED'});
-    }
+    // try {
+    //   await sendVerificationCode(user.email, code);
+    // } catch (emailError) {
+    //   await User.findByIdAndDelete(user._id);
+    //   throw new CustomError({statusCode: 500, message: `Failed to send verification email. Error: ${emailError.message}`, code: 'EMAIL_SEND_FAILED'});
+    // }
 
     const tokens = user.generateJwt();
     user.refreshTokenHash = tokens.refreshTokenHash;
