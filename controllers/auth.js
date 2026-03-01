@@ -5,9 +5,6 @@ const CustomError = require('../helpers/CustomError');
 const {generateVerificationCode, sendVerificationCode, hashCode} = require('../helpers/email');
 const User = require('../models/users');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET || JWT_SECRET;
-
 async function userRegister(data) {
   try {
     const code = generateVerificationCode();
@@ -80,6 +77,7 @@ async function userLogout(data) {
 
     let uid = userId;
     if (refreshToken && !uid) {
+      const REFRESH_SECRET = process.env.REFRESH_SECRET || process.env.JWT_SECRET;
       const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
       uid = decoded.userId;
     }
@@ -102,6 +100,7 @@ async function refreshTokens(data) {
     const {refreshToken} = data;
     if (!refreshToken) throw new CustomError({statusCode: 400, message: 'refreshToken is required', code: 'MISSING_PARAMETERS'});
 
+    const REFRESH_SECRET = process.env.REFRESH_SECRET || process.env.JWT_SECRET;
     const payload = jwt.verify(refreshToken, REFRESH_SECRET);
     const user = await User.findById(payload.userId).exec();
     if (!user) throw new CustomError({statusCode: 404, message: 'User not found', code: 'USER_NOT_FOUND'});
