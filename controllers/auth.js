@@ -16,12 +16,12 @@ async function userRegister(data) {
       verificationCode: hashedCode,
       verificationCodeExpiry: expiry
     });
-    
+
     try {
       await sendVerificationCode(user.email, code);
     } catch (emailError) {
       await User.findByIdAndDelete(user._id);
-      throw new CustomError({statusCode: 500, message: 'Failed to send verification email. Error: ' + emailError.message, code: 'EMAIL_SEND_FAILED'});
+      throw new CustomError({statusCode: 500, message: `Failed to send verification email. Error: ${emailError.message}`, code: 'EMAIL_SEND_FAILED'});
     }
 
     const tokens = user.generateJwt();
