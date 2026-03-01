@@ -80,10 +80,10 @@ userSchema.methods.verifyPassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET || JWT_SECRET;
-
 userSchema.methods.generateJwt = function () {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  const REFRESH_SECRET = process.env.REFRESH_SECRET || JWT_SECRET;
+  
   const accessToken = jwt.sign({userId: this._id, role: this.role}, JWT_SECRET, {expiresIn: '15m'});
   const refreshToken = jwt.sign({userId: this._id}, REFRESH_SECRET, {expiresIn: '30d'});
   const refreshTokenHash = bcrypt.hashSync(refreshToken, 10);
