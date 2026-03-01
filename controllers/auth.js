@@ -2,7 +2,7 @@ const process = require('node:process');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CustomError = require('../helpers/CustomError');
-const {generateVerificationCode, sendVerificationCode, hashCode} = require('../helpers/email');
+const {generateVerificationCode, hashCode} = require('../helpers/email');
 const User = require('../models/users');
 
 async function userRegister(data) {
