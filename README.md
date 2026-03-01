@@ -7,7 +7,7 @@ RESTful API for the ChapterOne online e-commerce bookstore. Built to provide a s
 ## 👥 Meet the Team
 This project was proudly built by:
 - **Asaad Mansour**
-- **Muhanad Medhat** 
+- **Muhanad Medhat**
 - **Haneen Elesawy**
 - **Mohammed Nagy**
 
@@ -54,11 +54,11 @@ This project was proudly built by:
 ├── app.js                  # Express app setup and middleware pipeline
 ├── server.js               # Application entry point
 ├── config/                 # Configurations (Swagger, DB, uploads)
-│   ├── cloudinary.js       
-│   ├── db.js               
-│   ├── mailer.js           
-│   ├── multer.js           
-│   └── swagger.js          
+│   ├── cloudinary.js
+│   ├── db.js
+│   ├── mailer.js
+│   ├── multer.js
+│   └── swagger.js
 ├── controllers/            # Route handler logic
 │   ├── auth.js             # Login, register, tokens
 │   ├── users.js            # Profile controllers
@@ -79,9 +79,9 @@ This project was proudly built by:
 ├── validations/            # Joi validation schemas for request bodies
 │   └── (auth, author, book, cart, category, order, review, users).js
 ├── helpers/                # Reusable utilities
-│   ├── CustomError.js      
-│   ├── email.js            
-│   ├── logger.js           
+│   ├── CustomError.js
+│   ├── email.js
+│   ├── logger.js
 │   └── syncAverageRating.js
 ├── .env                    # Environment variables mapping
 ├── eslint.config.js        # Linter configuration
@@ -134,14 +134,14 @@ npm run dev
 # Production
 npm start
 ```
-The server will start on `http://localhost:5000`. 
+The server will start on `http://localhost:5000`.
 Check the health endpoint at `http://localhost:5000/health`.
 
 ---
 
 ## 🗺️ API Endpoints
 
-### Auth 
+### Auth
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
 | GET | `/auth/me/test` | Test the API connection | Public |
@@ -160,7 +160,7 @@ Check the health endpoint at `http://localhost:5000/health`.
 | GET | `/users` | Get all user profiles | 🔑 Admin |
 | DELETE | `/users/:id` | Delete user profile | 🔑 Admin |
 
-### Books 
+### Books
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
 | GET | `/books` | List books (search, filter, paginate) | Public |
@@ -183,7 +183,7 @@ Check the health endpoint at `http://localhost:5000/health`.
 | PUT | `/categories/:id` | Update category | 🔑 Admin |
 | DELETE| `/categories/:id` | Delete category | 🔑 Admin |
 
-### Cart 
+### Cart
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
 | GET | `/cart` | Get cart items | 🔒 User |
@@ -192,7 +192,7 @@ Check the health endpoint at `http://localhost:5000/health`.
 | DELETE | `/cart/:bookId` | Remove item | 🔒 User |
 | DELETE | `/cart` | Clear entire cart | 🔒 User |
 
-### Orders 
+### Orders
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
 | POST | `/orders` | Place order | 🔒 User |
@@ -202,7 +202,7 @@ Check the health endpoint at `http://localhost:5000/health`.
 | PATCH | `/orders/:id/status` | Update order delivery status | 🔑 Admin |
 | PATCH | `/orders/:id/payment` | Update order payment status | 🔑 Admin |
 
-### Reviews 
+### Reviews
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
 | GET | `/reviews?book_id=`| Get book reviews | Public |
@@ -218,12 +218,12 @@ Check the health endpoint at `http://localhost:5000/health`.
 ### Order Status Flow
 ```text
 placed → processing → out for delivery → delivered
-           
+
 ```
 
 ### Payment Status Flow
 ```text
-pending → success 
+pending → success
 ```
 
 ---
