@@ -16,12 +16,20 @@ async function userRegister(data) {
       verificationCode: hashedCode,
       verificationCodeExpiry: expiry
     });
-    await sendVerificationCode(user.email, code);
+    
+    try {
+      await sendVerificationCode(user.email, code);
+    } catch (emailError) {
+      await User.findByIdAndDelete(user._id);
+      throw new CustomError({statusCode: 500, message: 'Failed to send verification email. Error: ' + emailError.message, code: 'EMAIL_SEND_FAILED'});
+    }
+
     const tokens = user.generateJwt();
     user.refreshTokenHash = tokens.refreshTokenHash;
     await user.save();
     return {message: 'User created successfully', user, tokens: {accessToken: tokens.accessToken, refreshToken: tokens.refreshToken}};
   } catch (error) {
+    if (error instanceof CustomError) throw error;
     throw new CustomError({statusCode: 500, message: error.message, code: 'INTERNAL_SERVER_ERROR'});
   }
 }
